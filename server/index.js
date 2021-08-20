@@ -7,7 +7,7 @@ const isTest = process.argv.indexOf('-t') !== -1;
 
 const resApp = n => resolve(resolve(__dirname, '..'), n);
 const { name } = require(resApp('package.json'));
-const staticRoot = resApp('src');
+const staticRoot = resApp('docs');
 
 const app = express();
 
