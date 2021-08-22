@@ -30,7 +30,7 @@ export default form => (
       } else {
         values[name] = input.selectedIndex === -1 ? null : getOptValue(input.options[input.selectedIndex]);
       }
-    } else if (tagName === 'textarea' || tagName === 'button') {
+    } else if (tagName === 'textarea') {
       values[name] = input.value;
     }
     return values;
