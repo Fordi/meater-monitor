@@ -1,5 +1,5 @@
 export default form => (
-  Array.from(form.querySelectorAll('input, select, textarea, button')).reduce((values, input) => {
+  Array.from(form.querySelectorAll('input, select, textarea')).reduce((values, input) => {
     const name = input.name || input.id;
     const tagName = input.tagName.toLowerCase();
     if (tagName === 'input') {
