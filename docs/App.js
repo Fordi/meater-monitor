@@ -4,12 +4,11 @@ import useUids from 'useUids';
 import collectForm from 'collectForm';
 
 import { useContext, useState, useCallback } from 'preact/hooks';
+import useEventListener from 'useEventListener';
 
 import Title from './Title.js';
 import MeaterCloud from './MeaterCloud.js';
 import MeaterDevice from './MeaterDevice.js';
-
-
 
 const styles = css`
   .loginForm {
@@ -20,7 +19,13 @@ const styles = css`
   }
 `;
 
+const calculateZoom = () => Math.min(
+  document.documentElement.clientHeight / 230 * 0.96,
+  document.documentElement.clientWidth / 200 * 0.96,
+);
+
 export default () => {
+  const [zoom, setZoom] = useState(calculateZoom);
   const { devices, loggedIn, login, logout } = useContext(MeaterCloud);
   const [error, setError] = useState(null);
   const signIn = useCallback(async (event) => {
@@ -32,10 +37,11 @@ export default () => {
       setError(error.message);
     }
   });
+  useEventListener(window, 'resize', () => setZoom(calculateZoom));
   const [textId, passwordId] = useUids(2);
   return html`
     <div className=${styles.main} style=${{
-      zoom: document.documentElement.clientHeight / 230 * 0.96,
+      zoom,
       width: 200,
       margin: '0 auto',
     }}>

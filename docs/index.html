@@ -20,9 +20,15 @@
       }
     </script>
     <style>
-      html, body { margin: 0; padding: 1vh; }
+      html, body { margin: 0; padding: 0; }
       html {background-color: #FFF;}
-      body {opacity: 0; transition: opacity 1s;}
+      body {
+        opacity: 0;
+        transition: opacity 1s;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+      }
       body.loaded {opacity: 1;}
     </style>
     <link rel="stylesheet" href="index.css" />
