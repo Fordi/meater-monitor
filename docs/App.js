@@ -17,6 +17,10 @@ const styles = css`
   .error {
     color: red;
   }
+  .main {
+    margin: 0 auto;
+    width: 200px;
+  }
 `;
 
 const calculateZoom = () => Math.min(
@@ -40,11 +44,7 @@ export default () => {
   useEventListener(window, 'resize', () => setZoom(calculateZoom));
   const [textId, passwordId] = useUids(2);
   return html`
-    <div className=${styles.main} style=${{
-      zoom,
-      width: 200,
-      margin: '0 auto',
-    }}>
+    <div className=${styles.main} style=${{ zoom }}>
       <${Title}>Meater Monitor</>
       ${loggedIn && (
         devices.length
