@@ -31,7 +31,7 @@ const Marker = ({ temp, color }) => {
         M 11, 69
         l -7.3, 7.5
         l -3.2, -6.8
-        z" fill="#FFFFFFFF"/>
+        z" fill="#111F"/>
       <path d="
         M 9.6, 69.7
         l -5.7, 5.5
@@ -44,13 +44,24 @@ const Marker = ({ temp, color }) => {
 const Spread = () => null;
 
 const formatTemp = temp => Number.isNaN(temp) ? '--' : `${(temp * 9 / 5 + 32).toFixed(0)}ºF`;
-
-const formatTime = time => {
+const tempColor = temp => {
+  if (Number.isNaN(temp)) return '#292';
+  console.log(temp * 230 / 205);
+}
+const formatTime = (time, retSecs) => {
   const hours = Math.floor(time / 3600);
-  const minutes = Math.round((time % 3600) / 60);
-  const block = [`${minutes.toFixed(0)}m`];
+  const minutes = Math[retSecs ? 'floor' : 'round']((time % 3600) / 60);
+  const block = [];
   if (hours) {
     block.unshift(`${hours.toFixed(0)}h`);
+  }
+  if (retSecs) {
+    if (minutes) {
+      block.push(`${minutes.toFixed(0)}m`);
+    }
+    block.push(`${time % 60}s`);
+  } else {
+    block.push(`${minutes.toFixed(0)}m`);
   }
   return block.join(' ');
 };
@@ -92,8 +103,13 @@ const styles = css`
     display: flex;
     justify-content: space-evenly;
   }
+  .cook {
+    font-family: Arial;
+    font-size: 10px;
+    text-anchor: middle;
+    fill: #EEE;
+  }
 `;
-
 export default ({
   width = 200,
   temperature: {
@@ -115,24 +131,31 @@ export default ({
       remaining,
     } = {},
   } = cook || {};
+  const lastUpdate = Math.round((Date.now() / 1000) - updated_at);
   return html`
     <div style=${{ width: `${width}px` }}>
       <div className=${styles.bubbles} style=${{ fontSize: `${width * 12 / 200}px`}}>
-        <${Bubble} color="purple" label="Internal" content=${formatTemp(internal)} />
-        <${Bubble} color="blue" label="Target" content=${target ? formatTemp(target) : '--'} />
-        <${Bubble} color="green" label="Ambient" content=${formatTemp(ambient)} />
+        <${Bubble} color="#52E" label="Internal" content=${formatTemp(internal)} />
+        <${Bubble} color="#3C3" label="Target" content=${target ? formatTemp(target) : '--'} />
+        <${Bubble} color="#E52" label="Ambient" content=${formatTemp(ambient)} />
       </div>
       <svg viewBox="-5 -10 110 86" width=${width} height=${width / 110 * 86} >
         <${Meter} />
         <${Spread} low=${peak} high=${target} />
-        <${Marker} color="purple" temp=${internal || '--'} />
-        <${Marker} color="blue" temp=${target || '--'} />
-        <${Marker} color="green" temp=${ambient || '--'} />
-        <text font-family="Arial" font-size="10" text-anchor="middle" x="50" y="45">${name}</text>
-        <text font-family="Arial" font-size="10" text-anchor="middle" x="50" y="55">
-          ${remaining && remaining >= 0 && formatTime(remaining)}
-          ${remaining < 0 && 'Estimating'}
+        <${Marker} color="#52E" temp=${internal || '--'} />
+        <${Marker} color="#3C3" temp=${target || '--'} />
+        <${Marker} color="#E52" temp=${ambient || '--'} />
+        <text className=${styles.cook.toString()} x="50" y="50">${name}</text>
+        <text className=${styles.cook.toString()} x="50" y="60">
+          ${remaining && remaining >= 0 && `ETA ${formatTime(remaining)}`}
+          ${remaining < 0 && 'Estimating ETA'}
           ${remaining === undefined && '--'}
+        </text>
+        <text className=${styles.cook.toString()} x="0" y="0" style="text-anchor: start;">
+          ${formatTime(lastUpdate, true)} ago
+        </text>
+        <text className=${styles.cook.toString()} x="50" y="30">
+          for ${formatTime(elapsed)}
         </text>
       </svg>
     </div>

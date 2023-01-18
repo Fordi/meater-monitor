@@ -21,6 +21,18 @@ const styles = css`
     margin: 0 auto;
     width: 200px;
   }
+  button {
+    background-color: #222;
+    border: 2px solid #EEE;
+    color: #EEE;
+    border-radius: 2px;
+    padding: 0.5em 1em;
+  }
+  .logout {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
 `;
 
 const calculateZoom = () => Math.min(
@@ -44,19 +56,23 @@ export default () => {
   useEventListener(window, 'resize', () => setZoom(calculateZoom));
   const [textId, passwordId] = useUids(2);
   return html`
+    ${loggedIn && html`
+      <button onClick=${logout} className=${styles.logout}>Log out</button>
+    `}
     <div className=${styles.main} style=${{ zoom }}>
       <${Title}>Meater Monitor</>
       ${loggedIn && (
         devices.length
         ? html`
-          ${devices.map(device => html`
-            <${MeaterDevice} ...${device} />
-            <button onClick=${logout}>Log out</button>
-          `)}
+          ${devices.map(device => {
+            console.log(device);
+            return html`
+              <${MeaterDevice} ...${device} />
+            `;
+          })}
         `
         : html`
           <div>No active Meater devices.</div>
-          <button onClick=${logout}>Log out</button>
         `
       )}
       

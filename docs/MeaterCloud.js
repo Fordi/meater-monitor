@@ -8,7 +8,7 @@ const MEATER_ROOT = 'https://public-api.cloud.meater.com/v1';
 const Context = createContext({});
 const { Provider } = Context;
 
-const MIN_INTERVAL = 30000;
+const MIN_INTERVAL = 15000;
 
 Context.Provider = ({
   children,
