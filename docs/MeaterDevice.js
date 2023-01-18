@@ -77,6 +77,7 @@ const bubble = css`
     flex-direction: column;
     justify-content: space-evenly;
     text-align: center;
+    text-shadow: 0 0 10px black, 0 0 10px black;
   }
   .circle label {
     font-size: 75%;
@@ -108,6 +109,7 @@ const styles = css`
     font-size: 10px;
     text-anchor: middle;
     fill: #EEE;
+    text-shadow: 0 0 5px black;
   }
 `;
 export default ({
