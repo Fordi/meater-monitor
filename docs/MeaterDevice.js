@@ -1,12 +1,16 @@
-import html from 'html';
-import css from 'css';
+import html from "html";
+import css from "css";
 
-const HalfMeter = (props) => html`<path id="halfMeter" d="
+const HalfMeter = (props) => html`<path
+  id="halfMeter"
+  d="
   M50 0
   A 50.4 50.4 0 0 0 7.2 76.5
   l 8.7 -5.3 a 40.2 40.2 0 0 134.1 -61
   z
-" ...${props} />`;
+"
+  ...${props}
+/>`;
 
 const Meter = () => html`
   <defs>
@@ -20,37 +24,44 @@ const Meter = () => html`
     </linearGradient>
   </defs>
   <${HalfMeter} fill="url('#cool')" />
-  <${HalfMeter} transform="translate(99, 0) scale(-1, 1)" fill="url('#warm')"/>
+  <${HalfMeter} transform="translate(99, 0) scale(-1, 1)" fill="url('#warm')" />
 `;
 
 const Marker = ({ temp, color }) => {
   if (Number.isNaN(parseFloat(temp))) return null;
   return html`
-    <g transform-origin="50 50" transform=${`rotate(${temp * 230 / 205})`} >
-      <path d="
+    <g transform-origin="50 50" transform=${`rotate(${(temp * 230) / 205})`}>
+      <path
+        d="
         M 11, 69
         l -7.3, 7.5
         l -3.2, -6.8
-        z" fill="#111F"/>
-      <path d="
+        z"
+        fill="#111F"
+      />
+      <path
+        d="
         M 9.6, 69.7
         l -5.7, 5.5
         l -2.2, -4.8
-        z" fill=${color}/>
+        z"
+        fill=${color}
+      />
     </g>
   `;
 };
 
 const Spread = () => null;
 
-const formatTemp = temp => Number.isNaN(temp) ? '--' : `${(temp * 9 / 5 + 32).toFixed(0)}ºF`;
-const tempColor = temp => {
-  if (Number.isNaN(temp)) return '#292';
-  console.log(temp * 230 / 205);
-}
-const formatTime = (time, retSecs) => {
+const formatTemp = (temp) =>
+  Number.isNaN(temp) ? "--" : `${((temp * 9) / 5 + 32).toFixed(0)}ºF`;
+const tempColor = (temp) => {
+  if (Number.isNaN(temp)) return "#292";
+  console.log((temp * 230) / 205);
+};
+const formatDuration = (time, retSecs) => {
   const hours = Math.floor(time / 3600);
-  const minutes = Math[retSecs ? 'floor' : 'round']((time % 3600) / 60);
+  const minutes = Math[retSecs ? "floor" : "round"]((time % 3600) / 60);
   const block = [];
   if (hours) {
     block.unshift(`${hours.toFixed(0)}h`);
@@ -63,7 +74,23 @@ const formatTime = (time, retSecs) => {
   } else {
     block.push(`${minutes.toFixed(0)}m`);
   }
-  return block.join(' ');
+  return block.join(" ");
+};
+
+const formatEta = (time, retSecs) => {
+  const hours = Math.floor(time / 3600);
+  const minutes = Math[retSecs ? "floor" : "round"]((time % 3600) / 60);
+  const t = new Date();
+  t.setHours(t.getHours() + hours);
+  t.setMinutes(t.getMinutes() + minutes);
+  if (retSecs) {
+    t.setSeconds(t.getSeconds() + (time % 60));
+  }
+  let fmtTime = t.toLocaleTimeString();
+  if (!retSecs) {
+    fmtTime = fmtTime.replace(/:\d{2} /, "");
+  }
+  return fmtTime.toLowerCase();
 };
 
 const bubble = css`
@@ -85,14 +112,14 @@ const bubble = css`
 `;
 
 const Bubble = ({ color, label, content }) => html`
-  <div 
+  <div
     className=${bubble.circle}
     style=${{
       backgroundColor: color,
     }}
   >
     <label>${label}</label>
-    <span >${content}</span>
+    <span>${content}</span>
   </div>
 `;
 
@@ -108,56 +135,74 @@ const styles = css`
     font-family: Arial;
     font-size: 10px;
     text-anchor: middle;
-    fill: #EEE;
+    fill: #eee;
     text-shadow: 0 0 5px black;
   }
 `;
 export default ({
   width = 200,
-  temperature: {
-    internal,
-    ambient
-  },
+  temperature: { internal, ambient },
   updated_at,
   cook,
 }) => {
   const {
     name,
     state,
-    temperature: {
-      peak,
-      target,
-    } = {},
-    time: {
-      elapsed,
-      remaining,
-    } = {},
+    temperature: { peak, target } = {},
+    time: { elapsed, remaining } = {},
   } = cook || {};
-  const lastUpdate = Math.round((Date.now() / 1000) - updated_at);
+  const lastUpdate = Math.round(Date.now() / 1000 - updated_at);
   return html`
     <div style=${{ width: `${width}px` }}>
-      <div className=${styles.bubbles} style=${{ fontSize: `${width * 12 / 200}px`}}>
-        <${Bubble} color="#52E" label="Internal" content=${formatTemp(internal)} />
-        <${Bubble} color="#3C3" label="Target" content=${target ? formatTemp(target) : '--'} />
-        <${Bubble} color="#E52" label="Ambient" content=${formatTemp(ambient)} />
+      <div
+        className=${styles.bubbles}
+        style=${{ fontSize: `${(width * 12) / 200}px` }}
+      >
+        <${Bubble}
+          color="#52E"
+          label="Internal"
+          content=${formatTemp(internal)}
+        />
+        <${Bubble}
+          color="#3C3"
+          label="Target"
+          content=${target ? formatTemp(target) : "--"}
+        />
+        <${Bubble}
+          color="#E52"
+          label="Ambient"
+          content=${formatTemp(ambient)}
+        />
       </div>
-      <svg viewBox="-5 -10 110 86" width=${width} height=${width / 110 * 86} >
+      <svg viewBox="-5 -10 110 86" width=${width} height=${(width / 110) * 86}>
         <${Meter} />
         <${Spread} low=${peak} high=${target} />
-        <${Marker} color="#52E" temp=${internal || '--'} />
-        <${Marker} color="#3C3" temp=${target || '--'} />
-        <${Marker} color="#E52" temp=${ambient || '--'} />
+        <${Marker} color="#52E" temp=${internal || "--"} />
+        <${Marker} color="#3C3" temp=${target || "--"} />
+        <${Marker} color="#E52" temp=${ambient || "--"} />
         <text className=${styles.cook.toString()} x="50" y="50">${name}</text>
         <text className=${styles.cook.toString()} x="50" y="60">
-          ${remaining && remaining >= 0 && `ETA ${formatTime(remaining)}`}
-          ${remaining < 0 && 'Estimating ETA'}
-          ${remaining === undefined && '--'}
+          ${remaining && remaining >= 0 && `...${formatDuration(remaining)}`}
+          ${remaining < 0 && "Estimating ETA"}
+          ${remaining === undefined && "--"}
         </text>
-        <text className=${styles.cook.toString()} x="0" y="0" style="text-anchor: start;">
-          ${formatTime(lastUpdate, true)} ago
+        ${remaining &&
+        remaining >= 0 &&
+        html`
+          <text className=${styles.cook.toString()} x="50" y="70">
+            ETA ${formatEta(remaining)}
+          </text>
+        `}
+        <text
+          className=${styles.cook.toString()}
+          x="0"
+          y="0"
+          style="text-anchor: start;"
+        >
+          ${formatDuration(lastUpdate, true)} ago
         </text>
         <text className=${styles.cook.toString()} x="50" y="30">
-          for ${formatTime(elapsed)}
+          for ${formatDuration(elapsed)}
         </text>
       </svg>
     </div>
